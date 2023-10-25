@@ -4,16 +4,25 @@ from django.db import models
 
 class Collection(models.Model):
     title = models.CharField(max_length=255)
-
+    featured_product = models.ForeignKey('Product',
+                                          on_delete=models.SET_NULL,
+                                            null=True,
+                                            related_name="+") 
+    ''' this create circular dpendency cause django will create another collection variable in the Product 
+    class, to work around it we can specify the related name to be "+" to prevent django from creating the
+    reverse relationship
+    '''
+    
 class Promotion(models.Model): 
     description = models.CharField(max_length=255)
     discount = models.FloatField()
     #product_set, default relation name
 
 class Product(models.Model):
+    slug = models.SlugField()
     title = models.CharField(max_length=255) #varchar(255)
     description = models.TextField()
-    price = models.DecimalField(decimal_places=2,max_digits=6) #9999.99
+    unit_price = models.DecimalField(decimal_places=2,max_digits=6) #9999.99
     inventory = models.IntegerField()
     last_update = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(Collection,on_delete=models.PROTECT)
