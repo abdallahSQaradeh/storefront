@@ -1,4 +1,8 @@
 from django.urls import path
 from . import views
 
-urlpatterns = [path("hello/",views.say_hello)]
+urlpatterns = [
+    path("hello/",views.say_hello),
+    path("tags/",views.querying_generic_realtionships),
+    path("create/",views.create_object)
+    ]
