@@ -17,6 +17,9 @@ class TaggedItemMnager(models.Manager):
 class Tag(models.Model):
     label = models.CharField(max_length=255)
 
+    def __str__(self) -> str:
+        return self.label
+
 class TaggedItem(models.Model):
     objects = TaggedItemMnager()
     # What tag applied to what object
