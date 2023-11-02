@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import \
 ProductDetail,ProductList, \
-collection_detail, \
+CollectionDetail, \
 CollectionList
 
 urlpatterns = [
@@ -11,6 +11,6 @@ urlpatterns = [
          CollectionList.as_view(),
          name='collection-list'),
     path('collections/<int:pk>', 
-         collection_detail,
+         CollectionDetail.as_view(),
          name='collection-detail')
 ]
