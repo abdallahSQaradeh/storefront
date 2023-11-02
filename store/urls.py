@@ -1,13 +1,12 @@
 from django.urls import path
 from .views import \
-product_list, \
-product_detail, \
+ProductDetail,ProductList, \
 collection_detail, \
 collection_list
 
 urlpatterns = [
-    path("products/", product_list),
-    path("products/<int:id>/", product_detail),
+    path("products/", ProductList.as_view()),
+    path("products/<int:id>/", ProductDetail.as_view()),
      path('collections/', 
          collection_list,
          name='collection-list'),
