@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from uuid import uuid4
 
 # Create your models here.
 
@@ -99,13 +100,19 @@ class Address(models.Model):
     customer = models.OneToOneField(Customer,on_delete=models.CASCADE,primary_key=True) # one address for each customer 
 
 class Cart(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    # we shouldn't call the uuid4, since it will be hardcoded to the migrations
+    # and will be the default for all carts
     created_At = models.DateTimeField(auto_now_add=True)
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE,related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField() 
+
+    class Meta:
+        unique_together = [['cart','product']]
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='reviews')
