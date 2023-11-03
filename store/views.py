@@ -10,14 +10,19 @@ from rest_framework import status
 from .models import Product,Collection,OrderItem,Review
 from .serializers import ProductSerializer,CollectionSeralizer, ReviewSerializer
 
-
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
     '''we use the context object to provide the serializer with more data'''
     def get_serializer_context(self):
         return {"request":self.request}
+    
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        collection_id =self.request.query_params.get('collection_id',None) 
+        if collection_id is not None:
+            return queryset.filter(collection_id = collection_id)
+        return queryset
     
     def destroy(self, request, *args, **kwargs):
         '''
