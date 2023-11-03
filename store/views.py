@@ -7,14 +7,15 @@ from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIVi
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
-from .models import Product,Collection,OrderItem
-from .serializers import ProductSerializer,CollectionSeralizer
+from .models import Product,Collection,OrderItem,Review
+from .serializers import ProductSerializer,CollectionSeralizer, ReviewSerializer
 
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
+    '''we use the context object to provide the serializer with more data'''
     def get_serializer_context(self):
         return {"request":self.request}
     
@@ -39,5 +40,14 @@ class CollectionViewSet(ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
+class ReviewViewSet(ModelViewSet):
+    # queryset = Review.objects.all() this will return all the reviews regardless the product id
+    # we need to override the get_queryset
+    serializer_class = ReviewSerializer
 
-
+    def get_serializer_context(self):
+        '''our url has two ids, product_pk and pk'''
+        return {'product_id':self.kwargs['product_pk']}
+    
+    def get_queryset(self):
+        return Review.objects.filter(product_id =self.kwargs['product_pk'] )
