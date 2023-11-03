@@ -1,7 +1,7 @@
 from decimal import Decimal
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
-from .models import Product, Collection,Review
+from .models import Product, Collection,Review,Cart,CartItem
 
 
 class CollectionSeralizer(serializers.ModelSerializer):
@@ -66,4 +66,72 @@ class ReviewSerializer(serializers.ModelSerializer):
         product_id = self.context['product_id']
         return Review.objects.create(product_id = product_id,**validated_data)
 
-        
+class CartItemProductSerailizer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id','title','unit_price']
+
+class CartItemSerializer(serializers.ModelSerializer):
+    product =CartItemProductSerailizer()
+    total_price= serializers.SerializerMethodField(method_name='calculate_total_price')
+    
+
+    def calculate_total_price(self, cart_item:CartItem):
+        return cart_item.quantity * cart_item.product.unit_price
+
+
+    class Meta:
+        model = CartItem
+        fields = ['id','product','quantity','total_price']
+
+class CartSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only = True)
+    items = CartItemSerializer(many=True,read_only = True)
+    total_price = serializers.SerializerMethodField(method_name='calculate_total_price')
+
+    def calculate_total_price(self, cart:Cart):
+        dir(cart)
+        total_price = sum([item.quantity * item.product.unit_price for item in cart.items.all()])
+        return total_price
+
+    class Meta:
+        model = Cart
+        fields = ['id','items','total_price']
+       
+class AddCartItemSerializer(serializers.ModelSerializer):
+    product_id = serializers.IntegerField()
+
+    def validate_product_id(self, product_id):
+        if not Product.objects.filter(pk= product_id).exists():
+            raise ValidationError("No product with the given id was found ")
+        return product_id
+
+    '''
+    because when we add the same product to the item we don't wan't to add
+    the product, but we do need to update the quantity of the item
+    so we cannot rely on the default save method from the ModelSerializer
+    '''
+    def save(self, **kwargs):
+        self.is_valid(raise_exception=True)
+        product_id = self.validated_data['product_id']
+        quantity = self.validated_data['quantity']
+        cart_id = self.context.get('cart_id')
+        try:
+            cart_item = CartItem.objects.get(cart_id=cart_id, product_id = product_id)
+            cart_item.quantity += quantity
+            cart_item.save()
+            self.instance =cart_item
+        except CartItem.DoesNotExist:
+            self.instance = CartItem.objects.create(cart_id=cart_id,
+                                                **self.validated_data)
+        return self.instance
+
+
+    class Meta:
+        model =CartItem
+        fields = ['id','product_id','quantity']
+
+class UpdateCartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = ['quantity']

@@ -103,13 +103,13 @@ class Cart(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
     # we shouldn't call the uuid4, since it will be hardcoded to the migrations
     # and will be the default for all carts
-    created_At = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE,related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField() 
+    quantity = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)]) 
 
     class Meta:
         unique_together = [['cart','product']]
