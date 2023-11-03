@@ -1,29 +1,30 @@
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
 from django.db.models import Count
-from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
+from rest_framework.filters import SearchFilter,OrderingFilter
+from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product,Collection,OrderItem,Review
 from .serializers import ProductSerializer,CollectionSeralizer, ReviewSerializer
+from .filters import ProductFilter
+from .pagination import DefaultPagination
 
 class ProductViewSet(ModelViewSet):
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filterset_class = ProductFilter
+    pagination_class = DefaultPagination
+    filter_backends = [DjangoFilterBackend,SearchFilter,OrderingFilter]
+    filterset_fields = ['collection_id']
+    search_fields = ['title','description']
+    ordering_fields =  ['unit_price','last_update']
+    
 
     '''we use the context object to provide the serializer with more data'''
     def get_serializer_context(self):
         return {"request":self.request}
-    
-    def get_queryset(self):
-        queryset = Product.objects.all()
-        collection_id =self.request.query_params.get('collection_id',None) 
-        if collection_id is not None:
-            return queryset.filter(collection_id = collection_id)
-        return queryset
-    
+
     def destroy(self, request, *args, **kwargs):
         '''
         the destroy method itself retrieve the object from the db to delete it  
