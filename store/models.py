@@ -97,6 +97,11 @@ class Order(models.Model):
     payment_status = models.CharField(max_length=1,choices=PAYMENT_STATUS)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
+
+    class Meta:
+        # permissions = [ (codename, description)]
+        permissions = [ ('cacel_order','Can cancel order') ]
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
     product = models.ForeignKey(Product, on_delete=models.PROTECT,related_name='orderitems')
