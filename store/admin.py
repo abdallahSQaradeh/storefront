@@ -68,11 +68,13 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
+    '''we defined two methods first_name, last_name to access them in the list_display'''
     list_display = ['first_name','last_name','membership','orders_count']
     list_editable = ['membership']
-    ordering = ['first_name','last_name']
+    ordering = ['user__first_name','user__last_name']
     list_per_page = 10
-    search_fields = ['first_name__istartswith','last_name__istartswith']
+    list_select_related = ['user'] # to enhance the hit of the db
+    search_fields = ['user__first_name__istartswith','user__last_name__istartswith']
     
 
     @admin.display(ordering='orders_count')
