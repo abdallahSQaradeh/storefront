@@ -1,5 +1,7 @@
 from django.db.models import Count
 from rest_framework.response import Response
+from rest_framework.request import Request
+from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet,GenericViewSet
 from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin, UpdateModelMixin,DestroyModelMixin
 from rest_framework.filters import SearchFilter,OrderingFilter
@@ -100,5 +102,21 @@ class CustomerViewset(CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,Gener
     '''
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    
-    
+
+
+    '''all the methods that responding to requests called actions,
+    such as the create and retrieve methods from the above mixins'''
+
+    @action(detail=False, methods=['GET','PUT'])
+    # detail=True - it will be available on /customers/{id}/me
+    # detail = False - it will be available on /customers/me
+    def me(self,request:Request):
+        (customer,created) = Customer.objects.get_or_create(user_id = request.user.id)
+        if request.method =='GET':    
+            serializer = CustomerSerializer(customer)
+            return Response(serializer.data)
+        elif request.method =='PUT':
+            serializer = CustomerSerializer(customer,data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)

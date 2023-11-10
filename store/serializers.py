@@ -140,7 +140,7 @@ class UpdateCartItemSerializer(serializers.ModelSerializer):
 class CustomerSerializer(serializers.ModelSerializer):
     '''Even though we have the user_id in the model, but we cannot see it in the endpoint cause it is created 
     at the run time, so we need to add to the serializer'''
-    user_id = serializers.IntegerField()
+    user_id = serializers.IntegerField(read_only = True)
 
     class Meta:
         model = Customer
