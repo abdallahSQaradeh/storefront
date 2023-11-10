@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet,GenericViewSet
 from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin, UpdateModelMixin,DestroyModelMixin
 from rest_framework.filters import SearchFilter,OrderingFilter
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product,Collection,OrderItem,\
     Review,Cart, CartItem, Customer
@@ -102,12 +102,17 @@ class CustomerViewset(CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,Gener
     '''
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_permissions(self):
+        if self.request.method=='GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     '''all the methods that responding to requests called actions,
     such as the create and retrieve methods from the above mixins'''
-
-    @action(detail=False, methods=['GET','PUT'])
+    @action(detail=False, methods=['GET','PUT'],permission_classes=[IsAuthenticated])
+    # also we can add permission_classes to this decorator
     # detail=True - it will be available on /customers/{id}/me
     # detail = False - it will be available on /customers/me
     def me(self,request:Request):
