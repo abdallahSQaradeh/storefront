@@ -1,11 +1,12 @@
 from django.db.models import Count
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet,GenericViewSet
 from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin, UpdateModelMixin,DestroyModelMixin
 from rest_framework.filters import SearchFilter,OrderingFilter
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product,Collection,OrderItem,\
     Review,Cart, CartItem, Customer
@@ -15,12 +16,14 @@ from .serializers import ProductSerializer,CollectionSeralizer, \
           CustomerSerializer
 from .filters import ProductFilter
 from .pagination import DefaultPagination
+from .permissions import IsAdminOrReadOnly
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
     pagination_class = DefaultPagination
+    permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend,SearchFilter,OrderingFilter]
     filterset_fields = ['collection_id']
     search_fields = ['title','description']
@@ -44,6 +47,7 @@ class ProductViewSet(ModelViewSet):
 class CollectionViewSet(ModelViewSet):
     queryset = Collection.objects.annotate(products_count = Count('products'))
     serializer_class = CollectionSeralizer
+    permission_classes=[IsAdminOrReadOnly]
 
     def destroy(self, request, *args, **kwargs):
         if Product.objects.filter(collection_id=kwargs['pk']).count()>0:
@@ -95,19 +99,10 @@ class CartItemViewSet(ModelViewSet):
     def get_queryset(self):
         return CartItem.objects.select_related('product').filter(cart_id =self.kwargs['cart_pk'])
     
-class CustomerViewset(CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,GenericViewSet):
-    '''
-    it is not the right choice to choose the ModelViewSet, cause we don't need
-    all the operations to be available
-    '''
+class CustomerViewset(ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_permissions(self):
-        if self.request.method=='GET':
-            return [AllowAny()]
-        return [IsAuthenticated()]
+    permission_classes = [IsAdminUser]
 
     '''all the methods that responding to requests called actions,
     such as the create and retrieve methods from the above mixins'''
