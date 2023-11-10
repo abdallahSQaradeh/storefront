@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet,GenericViewSet
 from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin, UpdateModelMixin,DestroyModelMixin
 from rest_framework.filters import SearchFilter,OrderingFilter
-from rest_framework.permissions import IsAuthenticated,IsAdminUser
+from rest_framework.permissions import IsAuthenticated,IsAdminUser,DjangoModelPermissions
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product,Collection,OrderItem,\
     Review,Cart, CartItem, Customer
@@ -16,7 +16,7 @@ from .serializers import ProductSerializer,CollectionSeralizer, \
           CustomerSerializer
 from .filters import ProductFilter
 from .pagination import DefaultPagination
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly,FullDjangoModelPermissions
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
@@ -102,7 +102,7 @@ class CartItemViewSet(ModelViewSet):
 class CustomerViewset(ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser,FullDjangoModelPermissions]
 
     '''all the methods that responding to requests called actions,
     such as the create and retrieve methods from the above mixins'''
