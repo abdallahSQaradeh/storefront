@@ -84,6 +84,10 @@ class Customer(models.Model):
 
     class Meta:
         ordering = ['user__first_name','user__last_name']
+        permissions = [
+            ('view_history','Can view history')
+        ] # this needs migrations, and it's not recommended to add specific permission via the model
+        # it will be reflected in the auth_permissions table
 
 
 class Order(models.Model):

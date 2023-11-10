@@ -16,7 +16,7 @@ from .serializers import ProductSerializer,CollectionSeralizer, \
           CustomerSerializer
 from .filters import ProductFilter
 from .pagination import DefaultPagination
-from .permissions import IsAdminOrReadOnly,FullDjangoModelPermissions
+from .permissions import IsAdminOrReadOnly,FullDjangoModelPermissions,CustomerHistoryPermission
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
@@ -120,3 +120,7 @@ class CustomerViewset(ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+        
+    @action(detail=True, permission_classes=[CustomerHistoryPermission])
+    def history(self,request,pk):
+        return Response("Hist")

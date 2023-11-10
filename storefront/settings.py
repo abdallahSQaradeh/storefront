@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'rest_framework',
     'djoser',
-    'rest_framework_simplejwt',
     #local apps
     'playground',
     'store',
