@@ -5,10 +5,12 @@ from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin, UpdateMod
 from rest_framework.filters import SearchFilter,OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Product,Collection,OrderItem,Review,Cart, CartItem
+from .models import Product,Collection,OrderItem,\
+    Review,Cart, CartItem, Customer
 from .serializers import ProductSerializer,CollectionSeralizer, \
     ReviewSerializer,CartSerializer,CartItemSerializer,\
-          AddCartItemSerializer, UpdateCartItemSerializer
+          AddCartItemSerializer, UpdateCartItemSerializer,\
+          CustomerSerializer
 from .filters import ProductFilter
 from .pagination import DefaultPagination
 
@@ -90,4 +92,13 @@ class CartItemViewSet(ModelViewSet):
     
     def get_queryset(self):
         return CartItem.objects.select_related('product').filter(cart_id =self.kwargs['cart_pk'])
+    
+class CustomerViewset(CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,GenericViewSet):
+    '''
+    it is not the right choice to choose the ModelViewSet, cause we don't need
+    all the operations to be available
+    '''
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+    
     

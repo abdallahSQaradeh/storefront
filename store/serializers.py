@@ -1,7 +1,7 @@
 from decimal import Decimal
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
-from .models import Product, Collection,Review,Cart,CartItem
+from .models import Product, Collection,Review,Cart,CartItem,Customer
 
 
 class CollectionSeralizer(serializers.ModelSerializer):
@@ -135,3 +135,13 @@ class UpdateCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ['quantity']
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    '''Even though we have the user_id in the model, but we cannot see it in the endpoint cause it is created 
+    at the run time, so we need to add to the serializer'''
+    user_id = serializers.IntegerField()
+
+    class Meta:
+        model = Customer
+        fields = ['id','user_id','phone','birth_date','membership']
