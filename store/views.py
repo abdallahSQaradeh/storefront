@@ -111,7 +111,7 @@ class CustomerViewset(ModelViewSet):
     # detail=True - it will be available on /customers/{id}/me
     # detail = False - it will be available on /customers/me
     def me(self,request:Request):
-        (customer,created) = Customer.objects.get_or_create(user_id = request.user.id)
+        customer = Customer.objects.get(user_id = request.user.id)
         if request.method =='GET':    
             serializer = CustomerSerializer(customer)
             return Response(serializer.data)
@@ -155,7 +155,7 @@ class OrderViewSet(ModelViewSet):
 
         if user.is_staff:
             return Order.objects.all()
-        # we are breaking the command query seperation by creating and retrieving at the same time
-        (customer_id,createed) = Customer.objects.only('id').get_or_create(user_id = user.id)
+        # now we are using signals to create the customer whenever we create a user
+        customer_id = Customer.objects.only('id').get(user_id = user.id)
         queryset = Order.objects.filter(customer_id = customer_id )
         return queryset
