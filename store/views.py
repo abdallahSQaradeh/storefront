@@ -9,11 +9,11 @@ from rest_framework.filters import SearchFilter,OrderingFilter
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,DjangoModelPermissions
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product,Collection,OrderItem,\
-    Review,Cart, CartItem, Customer
-from .serializers import ProductSerializer,CollectionSeralizer, \
+    Review,Cart, CartItem, Customer, Order
+from .serializers import CreateOrderSerializer, OrderSerializer, ProductSerializer,CollectionSeralizer, \
     ReviewSerializer,CartSerializer,CartItemSerializer,\
           AddCartItemSerializer, UpdateCartItemSerializer,\
-          CustomerSerializer
+          CustomerSerializer, UpdateOrderSerializer
 from .filters import ProductFilter
 from .pagination import DefaultPagination
 from .permissions import IsAdminOrReadOnly,FullDjangoModelPermissions,CustomerHistoryPermission
@@ -124,3 +124,38 @@ class CustomerViewset(ModelViewSet):
     @action(detail=True, permission_classes=[CustomerHistoryPermission])
     def history(self,request,pk):
         return Response("Hist")
+    
+
+class OrderViewSet(ModelViewSet):
+    '''we need only the admin user to delete or update the order'''
+    http_method_names = ['get','patch','delete','head','options']
+    
+    def get_permissions(self):
+        if self.request.method in ['PUT','PATCH','DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
+
+    def create(self, request, *args, **kwargs):
+        serializer = CreateOrderSerializer(data = request.data,context={'user_id':self.request.user.id})
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
+
+    def get_serializer_class(self):
+        if self.request.method =='POST':
+            return CreateOrderSerializer
+        elif self.request.method =='PATCH':
+            return UpdateOrderSerializer
+        return OrderSerializer
+    
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.is_staff:
+            return Order.objects.all()
+        # we are breaking the command query seperation by creating and retrieving at the same time
+        (customer_id,createed) = Customer.objects.only('id').get_or_create(user_id = user.id)
+        queryset = Order.objects.filter(customer_id = customer_id )
+        return queryset
