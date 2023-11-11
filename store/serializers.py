@@ -3,7 +3,7 @@ from django.db.transaction import atomic
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
 from .models import Order, OrderItem, Product, Collection,Review,Cart,CartItem,Customer
-
+from .signals import order_created
 
 class CollectionSeralizer(serializers.ModelSerializer):
     class Meta:
@@ -190,6 +190,15 @@ class CreateOrderSerializer(serializers.Serializer):
             
             # delete the cart
             Cart.objects.filter(pk = cart_id).delete()
+
+            '''
+            self.__class__: return the class of the current instance
+
+            '''
+            order_created.send_robust(
+                self.__class__, # sender
+                order = order   # instance
+                )
 
             return order
 

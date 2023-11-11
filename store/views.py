@@ -128,7 +128,7 @@ class CustomerViewset(ModelViewSet):
 
 class OrderViewSet(ModelViewSet):
     '''we need only the admin user to delete or update the order'''
-    http_method_names = ['get','patch','delete','head','options']
+    http_method_names = ['get','patch','post','delete','head','options']
     
     def get_permissions(self):
         if self.request.method in ['PUT','PATCH','DELETE']:
