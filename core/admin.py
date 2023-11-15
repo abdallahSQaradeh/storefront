@@ -24,7 +24,7 @@ class TagInline(GenericTabularInline):
     autocomplete_fields = ['tag']
 
 class CustomProductAdmin(ProductAdmin):
-    inlines = [TagInline]
+    inlines = ProductAdmin.inlines + [TagInline]
 
 admin.site.unregister(Product)
 admin.site.register(Product,CustomProductAdmin)

@@ -8,9 +8,9 @@ from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin, UpdateMod
 from rest_framework.filters import SearchFilter,OrderingFilter
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,DjangoModelPermissions
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Product,Collection,OrderItem,\
+from .models import Product,Collection,OrderItem, ProductImage,\
     Review,Cart, CartItem, Customer, Order
-from .serializers import CreateOrderSerializer, OrderSerializer, ProductSerializer,CollectionSeralizer, \
+from .serializers import CreateOrderSerializer, OrderSerializer, ProductImageSerializer, ProductSerializer,CollectionSeralizer, \
     ReviewSerializer,CartSerializer,CartItemSerializer,\
           AddCartItemSerializer, UpdateCartItemSerializer,\
           CustomerSerializer, UpdateOrderSerializer
@@ -19,7 +19,7 @@ from .pagination import DefaultPagination
 from .permissions import IsAdminOrReadOnly,FullDjangoModelPermissions,CustomerHistoryPermission
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.prefetch_related("images").all()
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
     pagination_class = DefaultPagination
@@ -42,6 +42,16 @@ class ProductViewSet(ModelViewSet):
             return Response({'error':"Product cannot be deleted because it is associated with order item"}
                         ,status = status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
+
+class ProductImageViewSet(ModelViewSet):
+    queryset = ProductImage
+    serializer_class = ProductImageSerializer
+
+    def get_queryset(self):
+        return ProductImage.objects.filter(product_id=self.kwargs['product_pk'])
+    
+    def get_serializer_context(self):
+        return {"product_id": self.kwargs['product_pk']}
 
 # for retreive only view sets (get item and get list) use ReadOnlyModelViewSet
 class CollectionViewSet(ModelViewSet):

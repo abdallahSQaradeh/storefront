@@ -24,6 +24,16 @@ class InventoryFilter(admin.SimpleListFilter):
             return queryset.filter(inventory__lt=10)
 
 
+class ProductImageInline(admin.TabularInline):
+    model = models.ProductImage
+    readonly_fields =['thumbnail']
+
+    def thumbnail(self, instance):
+        if instance.image.name != '':
+            return format_html(f"<img src={instance.image.url} class='thumbnail'/>")
+        return ""
+    
+
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {
@@ -47,6 +57,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_select_related = ['collection'] # this to enhance the query and prevent django from 
     # having a query for each product
+    inlines = [ProductImageInline]
 
     @admin.display(ordering="inventory")
     def inventory_status(self, product):
@@ -64,6 +75,10 @@ class ProductAdmin(admin.ModelAdmin):
                            f'{updated_count} Products were succefully updated',
                            messages.SUCCESS
                            )
+    class Media:
+        css = {
+            "all":["store/styles.css"]
+        }
 
 
 @admin.register(models.Customer)

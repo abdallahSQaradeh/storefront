@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.db.transaction import atomic
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
-from .models import Order, OrderItem, Product, Collection,Review,Cart,CartItem,Customer
+from .models import Order, OrderItem, Product, Collection, ProductImage,Review,Cart,CartItem,Customer
 from .signals import order_created
 
 class CollectionSeralizer(serializers.ModelSerializer):
@@ -14,7 +14,16 @@ class CollectionSeralizer(serializers.ModelSerializer):
     
     def calculate_products_count(self, collection:Collection):
         return collection.products.count()
+    
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields =['id','image']
 
+    def create(self, validated_data):
+        product_id = self.context['product_id']
+        return ProductImage.objects.create(product_id=product_id,**validated_data)
+        
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -25,7 +34,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'inventory',
             'price',
             'price_with_tax',
-            'collection']
+            'collection',
+            'images']
     # id = serializers.IntegerField()
     # title = serializers.CharField(max_length =255)
     price = serializers.DecimalField( source="unit_price" ,max_digits=6, decimal_places=2)
@@ -37,6 +47,7 @@ class ProductSerializer(serializers.ModelSerializer):
     #     queryset = Collection.objects.all(),
     #     view_name='collection-detail'
     # )
+    images = ProductImageSerializer(many=True,read_only=True)
 
     def calculate_tax(self,product:Product):
         return product.unit_price * Decimal(1.1) 
@@ -56,6 +67,7 @@ class ProductSerializer(serializers.ModelSerializer):
     #     instance.unit_price = validated_data.get("unit_price")
     #     instance.save()
     #     return instance
+
 
 
 class ReviewSerializer(serializers.ModelSerializer):
