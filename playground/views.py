@@ -13,7 +13,7 @@ from tags.models import TaggedItem
 # Create your views here.
 def say_hello(request):
     try:
-        send_mail("Test Email","hello from me",recipient_list=["a@q.c"],fail_silently=False,from_email="from@me.com",)
+        mail_admins("Test Email","hello from me",html_message="message") # supports plain text and html
     except BadHeaderError:
         return HttpResponse("You are using fake emails headers")
 
