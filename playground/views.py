@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.core.mail import send_mail,mail_admins,BadHeaderError
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q,F
@@ -11,6 +12,11 @@ from tags.models import TaggedItem
 
 # Create your views here.
 def say_hello(request):
+    try:
+        send_mail("Test Email","hello from me",recipient_list=["a@q.c"],fail_silently=False,from_email="from@me.com",)
+    except BadHeaderError:
+        return HttpResponse("You are using fake emails headers")
+
     products = Product.objects.filter(last_update__year=2021)
     queryset = Product.objects.filter(Q(inventory__lt=10)& Q(unit_price__lt=20))
     # Q object are preferable when it comes to OR operator
