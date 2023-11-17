@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.core.mail import send_mail,mail_admins,BadHeaderError
+from django.core.mail import send_mail,mail_admins,BadHeaderError,EmailMessage
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q,F
@@ -13,7 +13,9 @@ from tags.models import TaggedItem
 # Create your views here.
 def say_hello(request):
     try:
-        mail_admins("Test Email","hello from me",html_message="message") # supports plain text and html
+       message =  EmailMessage("Test Email","hello from me","abdall@t.com",["jhon@html.com"]) # supports plain text and html
+       message.attach_file("playground/static/images/OIP.jpg")
+       message.send()
     except BadHeaderError:
         return HttpResponse("You are using fake emails headers")
 
