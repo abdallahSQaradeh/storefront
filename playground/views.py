@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q,F
 from django.db.models.aggregates import Avg,Sum,Max,Count,Min 
 from django.contrib.contenttypes.models import ContentType # represents the django_content_type table
+from playground.tasks import notify_customer 
 from store.models import Product, Order,Collection
 from store.models import OrderItem
 from tags.models import TaggedItem
@@ -12,6 +13,8 @@ from tags.models import TaggedItem
 
 # Create your views here.
 def say_hello(request):
+    notify_customer.delay("Hello there")
+
     try:
        message =  EmailMessage("Test Email","hello from me","abdall@t.com",["jhon@html.com"]) # supports plain text and html
        message.attach_file("playground/static/images/OIP.jpg")
