@@ -8,6 +8,14 @@ django = "*"
 django-debug-toolbar = "*"
 pillow = "*"
 django-cors-headers = "*"
+django-filter = "*"
+djangorestframework = "*"
+djoser = "*"
+psycopg = {extras = ["binary"], version = "*"}
+djangorestframework-simplejwt = "*"
+celery = "*"
+redis = "*"
+drf-nested-routers = "*"
 
 [dev-packages]
 
