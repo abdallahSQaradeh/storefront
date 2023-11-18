@@ -16,8 +16,11 @@ djangorestframework-simplejwt = "*"
 celery = "*"
 redis = "*"
 drf-nested-routers = "*"
+flower = "*"
 
 [dev-packages]
+pytest = "*"
+pytest-django = "*"
 
 [requires]
 python_version = "3.12"
