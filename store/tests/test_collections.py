@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from rest_framework import status
 import pytest
