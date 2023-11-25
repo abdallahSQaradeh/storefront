@@ -6,22 +6,22 @@ from django.db.models import Q,F
 from django.db.models.aggregates import Avg,Sum,Max,Count,Min 
 from django.contrib.contenttypes.models import ContentType # represents the django_content_type table
 from django.core.cache import cache
+from django.views.decorators.cache import cache_page
 import requests
 from playground.tasks import notify_customer 
 from store.models import Product, Order,Collection
 from store.models import OrderItem
 from tags.models import TaggedItem
 
+@cache_page(60*5)
+def say_hello_cached(request):
+    response = requests.get("https://httpbin.org/delay/2")# delay two secondes
+    data = response.json()
+    return render(request,'hello.html',{'result':data})
 
 # Create your views here.
 def say_hello(request):
     notify_customer.delay("Hello there")
-    
-    key ="httpbin"
-    if  cache.get(key) is None:
-        response = requests.get("https://httpbin.org/delay/2")# delay two secondes
-        cache.set(key,response.json())
-
 
     try:
        message =  EmailMessage("Test Email","hello from me","abdall@t.com",["jhon@html.com"]) # supports plain text and html
