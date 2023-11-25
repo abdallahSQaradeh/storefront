@@ -19,6 +19,7 @@ drf-nested-routers = "*"
 flower = "*"
 locust = "*"
 django-silk = "*"
+django-redis = "*"
 
 [dev-packages]
 pytest = "*"
