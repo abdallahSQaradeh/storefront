@@ -9,18 +9,25 @@ from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 import requests
+import logging
 from rest_framework.views import APIView
 from playground.tasks import notify_customer 
 from store.models import Product, Order,Collection
 from store.models import OrderItem
 from tags.models import TaggedItem
 
+logger = logging.getLogger(__name__) #playground.views
 
 class HelloView(APIView):
     @method_decorator(cache_page(60*5))
     def get(self, request):
-        response = requests.get("https://httpbin.org/delay/2")# delay two secondes
-        data = response.json()
+        try:
+            logger.info("Calling HTTP")
+            response = requests.get("https://httpbin.org/delay/2")# delay two secondes
+            data = response.json()
+            logger.info("Recieved Response")
+        except requests.ConnectionError:
+            logger.critical("httpbins offline")
         return render(request,'hello.html',{'result':data})
 
 # Create your views here.
