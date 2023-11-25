@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c169b180cd3c330d62f20deded9c19ca3723a9f84f061bd8d0cfc946dea017f2"
+            "sha256": "21c5bc341b469aad648b243c2ded04be6fe5b2e04796a8f19fecd825b8529004"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -31,6 +31,14 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==3.7.2"
+        },
+        "autopep8": {
+            "hashes": [
+                "sha256:067959ca4a07b24dbd5345efa8325f5f58da4298dab0dde0443d5ed765de80cb",
+                "sha256:2913064abd97b3419d1cc83ea71f042cb821f87e45b9c88cad5ad3c4ea87fe0c"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==2.0.4"
         },
         "billiard": {
             "hashes": [
@@ -419,6 +427,15 @@
             "markers": "python_version >= '3.7'",
             "version": "==23.4"
         },
+        "django-silk": {
+            "hashes": [
+                "sha256:8cbfbc647d182527726d8d52d3fcfa193f4d250f21406c3fb1062efa6fb95c63",
+                "sha256:b345d3973d1d382e09735eb525eaf3eebd3edee9a69d1003eb9b01badb2438db"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.8'",
+            "version": "==5.0.4"
+        },
         "django-templated-mail": {
             "hashes": [
                 "sha256:8db807effebb42a532622e2d142dfd453dafcd0d7794c4c3332acb90656315f9",
@@ -650,6 +667,14 @@
                 "sha256:f5d73be013a7a2a357eb27d18e5990c773365f63f50a43eaf357d6efb1fd46a6"
             ],
             "version": "==2.0.11"
+        },
+        "gprof2dot": {
+            "hashes": [
+                "sha256:45b4d298bd36608fccf9511c3fd88a773f7a1abc04d6cd39445b11ba43133ec5",
+                "sha256:f165b3851d3c52ee4915eb1bd6cca571e5759823c2cd0f71a79bda93c2dc85d6"
+            ],
+            "markers": "python_version >= '2.7'",
+            "version": "==2022.7.29"
         },
         "greenlet": {
             "hashes": [
@@ -1078,6 +1103,14 @@
                 "sha256:f6c6bff712d9e1a103cc23fc2c89833a69ed049261e390cadb68d2d42edeedea"
             ],
             "version": "==3.1.13"
+        },
+        "pycodestyle": {
+            "hashes": [
+                "sha256:41ba0e7afc9752dfb53ced5489e89f8186be00e599e712660695b7a75ff2663f",
+                "sha256:44fe31000b2d866f2e41841b18528a505fbd7fef9017b04eff4e2648a0fadc67"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==2.11.1"
         },
         "pycparser": {
             "hashes": [
